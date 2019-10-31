@@ -1,9 +1,12 @@
 //connect framework express
 let express = require('express')
 let mongodb = require('mongodb')
+
 let app = express()
+app.use(express.static('public'))
 
 let db
+
 
 let connectionString = 'mongodb+srv://toDoAppUser:Makar!23Barak@RED@cluster0-fmjmq.mongodb.net/TodoApp?retryWrites=true&w=majority'
 mongodb.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true  },function(err, client){
@@ -11,6 +14,7 @@ mongodb.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: t
   app.listen(3000)
 })
 
+app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 
 //the first page
@@ -44,7 +48,7 @@ app.get('/', function(require, response){
               <li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
                 <span class="item-text">${elem.text}</span>
                 <div>
-                  <button class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
+                  <button data-id="${elem._id}" class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
                   <button class="delete-me btn btn-danger btn-sm">Delete</button>
                 </div>
               </li>`
@@ -52,7 +56,8 @@ app.get('/', function(require, response){
           </ul>
 
         </div>
-
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script src="browser.js"> </script>
       </body>
       </html>
     `)
@@ -62,5 +67,11 @@ app.get('/', function(require, response){
 app.post('/create-item', function(request, response){
   db.collection('items').insertOne({text: request.body.item}, function(){
     response.redirect('/')
+  })
+})
+
+app.post('/update-item', function(req, res){
+  db.collection('items').findOneAndUpdate({_id: new mongodb.ObjectId(req.body.id)}, {$set: {text: req.body.text}}, function(){
+    res.send("Succes")
   })
 })
