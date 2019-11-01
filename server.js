@@ -9,7 +9,7 @@ let db
 
 
 let connectionString = 'mongodb+srv://toDoAppUser:Makar!23Barak@RED@cluster0-fmjmq.mongodb.net/TodoApp?retryWrites=true&w=majority'
-mongodb.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true  },function(err, client){
+mongodb.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true  }, (err, client) =>{
   db = client.db()
   app.listen(3000)
 })
@@ -18,8 +18,8 @@ app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 
 //the first page
-app.get('/', function(require, response){
-  db.collection('items').find().toArray(function(err, items){
+app.get('/', (require, response) => {
+  db.collection('items').find().toArray( (err, items) => {
     response.send(`
       <!DOCTYPE html>
       <html>
@@ -43,7 +43,7 @@ app.get('/', function(require, response){
           </div>
 
           <ul class="list-group pb-5">
-            ${items.map(function(elem){
+            ${items.map( (elem) => {
               return`
               <li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
                 <span class="item-text">${elem.text}</span>
@@ -64,19 +64,19 @@ app.get('/', function(require, response){
   })
 })
 
-app.post('/create-item', function(request, response){
+app.post('/create-item', (request, response) => {
   db.collection('items').insertOne({text: request.body.item}, function(){
     response.redirect('/')
   })
 })
 
-app.post('/update-item', function(req, res){
+app.post('/update-item', (req, res) => {
   db.collection('items').findOneAndUpdate({_id: new mongodb.ObjectId(req.body.id)}, {$set: {text: req.body.text}}, function(){
     res.send("Succes")
   })
 })
 
-app.post('/delete-item', function(req, res){
+app.post('/delete-item', (req, res) => {
   db.collection('items').deleteOne({ _id: new mongodb.ObjectId(req.body.id) }, function(){
     res.send("Succes")
   })
